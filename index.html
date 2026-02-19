@@ -5,16 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Rack Manager</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <!-- Firebase -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
             background: var(--tg-theme-bg-color, #f5f5f5);
@@ -22,19 +16,16 @@
             padding: 16px;
             padding-bottom: 80px;
         }
-
         .header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 20px;
         }
-
         .title {
             font-size: 24px;
             font-weight: bold;
         }
-
         .add-button {
             background: var(--tg-theme-button-color, #40a7e3);
             color: var(--tg-theme-button-text-color, #ffffff);
@@ -49,7 +40,6 @@
             justify-content: center;
             box-shadow: 0 4px 12px rgba(64, 167, 227, 0.3);
         }
-
         .rack-tabs {
             display: flex;
             gap: 8px;
@@ -58,7 +48,6 @@
             padding: 8px;
             border-radius: 12px;
         }
-
         .rack-tab {
             flex: 1;
             padding: 12px;
@@ -71,26 +60,22 @@
             cursor: pointer;
             transition: all 0.2s;
         }
-
         .rack-tab.active {
             background: var(--tg-theme-button-color, #40a7e3);
             color: var(--tg-theme-button-text-color, #ffffff);
         }
-
         .rack-view {
             background: var(--tg-theme-secondary-bg-color, #ffffff);
             border-radius: 16px;
             padding: 16px;
             margin-bottom: 20px;
         }
-
         .units-grid {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
             gap: 4px;
             margin-top: 16px;
         }
-
         .unit {
             aspect-ratio: 1;
             border-radius: 8px;
@@ -102,26 +87,17 @@
             cursor: pointer;
             transition: transform 0.2s;
         }
-
         .unit.free {
             background: var(--tg-theme-hint-color, #e0e0e0);
             color: var(--tg-theme-text-color, #000000);
             opacity: 0.3;
         }
-
         .unit.occupied {
             background: var(--tg-theme-button-color, #40a7e3);
             color: var(--tg-theme-button-text-color, #ffffff);
         }
-
-        .unit:hover {
-            transform: scale(1.05);
-        }
-
-        .servers-list {
-            margin-top: 20px;
-        }
-
+        .unit:hover { transform: scale(1.05); }
+        .servers-list { margin-top: 20px; }
         .server-card {
             background: var(--tg-theme-secondary-bg-color, #ffffff);
             border-radius: 12px;
@@ -129,32 +105,27 @@
             margin-bottom: 12px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
-
         .server-header {
             display: flex;
             justify-content: space-between;
             align-items: start;
             margin-bottom: 8px;
         }
-
         .server-name {
             font-size: 18px;
             font-weight: 600;
         }
-
         .server-location {
             color: var(--tg-theme-hint-color, #666666);
             font-size: 14px;
             margin-bottom: 8px;
         }
-
         .server-details {
             display: flex;
             gap: 12px;
             font-size: 14px;
             color: var(--tg-theme-hint-color, #666666);
         }
-
         .delete-btn {
             background: none;
             border: none;
@@ -163,7 +134,6 @@
             cursor: pointer;
             padding: 4px 8px;
         }
-
         .modal {
             display: none;
             position: fixed;
@@ -177,11 +147,7 @@
             padding: 16px;
             z-index: 1000;
         }
-
-        .modal.active {
-            display: flex;
-        }
-
+        .modal.active { display: flex; }
         .modal-content {
             background: var(--tg-theme-secondary-bg-color, #ffffff);
             border-radius: 16px;
@@ -191,24 +157,20 @@
             max-height: 80vh;
             overflow-y: auto;
         }
-
         .modal-title {
             font-size: 20px;
             font-weight: bold;
             margin-bottom: 16px;
         }
-
         .form-group {
             margin-bottom: 16px;
         }
-
         .form-group label {
             display: block;
             margin-bottom: 4px;
             color: var(--tg-theme-hint-color, #666666);
             font-size: 14px;
         }
-
         .form-group input,
         .form-group select,
         .form-group textarea {
@@ -220,20 +182,17 @@
             color: var(--tg-theme-text-color, #000000);
             font-size: 16px;
         }
-
         .form-row {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 8px;
         }
-
         .modal-buttons {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 8px;
             margin-top: 20px;
         }
-
         .modal-button {
             padding: 14px;
             border: none;
@@ -242,49 +201,41 @@
             font-weight: 500;
             cursor: pointer;
         }
-
         .modal-button.primary {
             background: var(--tg-theme-button-color, #40a7e3);
             color: var(--tg-theme-button-text-color, #ffffff);
         }
-
         .modal-button.secondary {
             background: var(--tg-theme-hint-color, #e0e0e0);
             color: var(--tg-theme-text-color, #000000);
         }
-
         .loading {
             text-align: center;
             padding: 40px;
             color: var(--tg-theme-hint-color, #666666);
         }
-
         .stats-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 12px;
             margin-bottom: 20px;
         }
-
         .stat-card {
             background: var(--tg-theme-secondary-bg-color, #ffffff);
             padding: 16px;
             border-radius: 12px;
             text-align: center;
         }
-
         .stat-value {
             font-size: 28px;
             font-weight: bold;
             color: var(--tg-theme-button-color, #40a7e3);
         }
-
         .stat-label {
             font-size: 14px;
             color: var(--tg-theme-hint-color, #666666);
             margin-top: 4px;
         }
-
         .search-input {
             width: 100%;
             padding: 12px;
@@ -295,18 +246,44 @@
             font-size: 16px;
             margin-bottom: 16px;
         }
+        .nav-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--tg-theme-secondary-bg-color, #ffffff);
+            display: flex;
+            justify-content: space-around;
+            padding: 12px;
+            border-top: 1px solid var(--tg-theme-hint-color, #e0e0e0);
+        }
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            background: none;
+            border: none;
+            color: var(--tg-theme-hint-color, #666666);
+            font-size: 12px;
+            cursor: pointer;
+        }
+        .nav-item.active {
+            color: var(--tg-theme-button-color, #40a7e3);
+        }
+        .nav-icon { font-size: 20px; }
     </style>
 </head>
 <body>
     <div class="header">
         <h1 class="title">Rack Manager</h1>
-        <button class="add-button" onclick="openAddModal()">+</button>
+        <button class="add-button" onclick="window.app.openAddModal()">+</button>
     </div>
 
     <div class="rack-tabs">
-        <button class="rack-tab active" onclick="switchRack('A')">A</button>
-        <button class="rack-tab" onclick="switchRack('B')">B</button>
-        <button class="rack-tab" onclick="switchRack('C')">C</button>
+        <button class="rack-tab active" onclick="window.app.switchRack('A')">A</button>
+        <button class="rack-tab" onclick="window.app.switchRack('B')">B</button>
+        <button class="rack-tab" onclick="window.app.switchRack('C')">C</button>
     </div>
 
     <div id="content">
@@ -317,7 +294,7 @@
     <div id="serverModal" class="modal">
         <div class="modal-content">
             <h2 class="modal-title" id="modalTitle">Добавить сервер</h2>
-            <form id="serverForm" onsubmit="saveServer(event)">
+            <form id="serverForm" onsubmit="window.app.saveServer(event)">
                 <input type="hidden" id="serverId">
                 
                 <div class="form-group">
@@ -437,7 +414,7 @@
                 </div>
                 
                 <div class="modal-buttons">
-                    <button type="button" class="modal-button secondary" onclick="closeModal()">Отмена</button>
+                    <button type="button" class="modal-button secondary" onclick="window.app.closeModal()">Отмена</button>
                     <button type="submit" class="modal-button primary">Сохранить</button>
                 </div>
             </form>
@@ -446,356 +423,354 @@
 
     <!-- Навигация -->
     <div class="nav-bar">
-        <button class="nav-item active" onclick="showView('racks')">
+        <button class="nav-item active" onclick="window.app.showView('racks')">
             <span class="nav-icon">🏢</span>
             <span>Стойки</span>
         </button>
-        <button class="nav-item" onclick="showView('stats')">
+        <button class="nav-item" onclick="window.app.showView('stats')">
             <span class="nav-icon">📊</span>
             <span>Статистика</span>
         </button>
-        <button class="nav-item" onclick="showView('search')">
+        <button class="nav-item" onclick="window.app.showView('search')">
             <span class="nav-icon">🔍</span>
             <span>Поиск</span>
         </button>
     </div>
 
     <script>
-        // Инициализация Telegram
-        const tg = window.Telegram.WebApp;
-        tg.ready();
-        tg.expand();
+        (function() {
+            // Инициализация Telegram
+            const tg = window.Telegram.WebApp;
+            tg.ready();
+            tg.expand();
 
-        // Данные пользователя
-        const userId = tg.initDataUnsafe?.user?.id || 'anonymous';
-        const userName = tg.initDataUnsafe?.user?.first_name || 'User';
-
-// Import the functions you need from the SDKs you need
-import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
-
-// Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
-const firebaseConfig = {
-  apiKey: "AIzaSyBDSftDnPN_gSYzYOZ-dTALNjQe-zXoPsE",
-  authDomain: "rack-manager-340bb.firebaseapp.com",
-  projectId: "rack-manager-340bb",
-  storageBucket: "rack-manager-340bb.firebasestorage.app",
-  messagingSenderId: "505060999321",
-  appId: "1:505060999321:web:5a36888fb94648f4c2f808",
-  measurementId: "G-SFG7YME7XH"
-};
-
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
-
-        let currentRack = 'A';
-        let currentView = 'racks';
-        let servers = [];
-
-        // Загрузка данных
-        async function loadData() {
-            try {
-                const snapshot = await db.collection('servers').get();
-                servers = snapshot.docs.map(doc => ({
-                    id: doc.id,
-                    ...doc.data()
-                }));
-                renderView();
-            } catch (error) {
-                console.error('Ошибка загрузки:', error);
-                servers = [];
-                renderView();
-            }
-        }
-
-        // Переключение стойки
-        function switchRack(rack) {
-            currentRack = rack;
-            document.querySelectorAll('.rack-tab').forEach((tab, i) => {
-                tab.classList.toggle('active', i === ['A','B','C'].indexOf(rack));
-            });
-            if (currentView === 'racks') renderView();
-        }
-
-        // Отображение
-        function renderView() {
-            if (currentView === 'racks') renderRacks();
-            else if (currentView === 'stats') renderStats();
-            else if (currentView === 'search') renderSearch();
-        }
-
-        // Отображение стоек
-        function renderRacks() {
-            const rackServers = servers.filter(s => s.rack === currentRack);
-            
-            // Карта занятых юнитов
-            const occupiedMap = {};
-            rackServers.forEach(server => {
-                for (let u = server.startUnit; u <= server.endUnit; u++) {
-                    occupiedMap[u] = server;
-                }
-            });
-
-            // Сетка юнитов
-            let unitsHtml = '';
-            for (let i = 1; i <= 49; i++) {
-                const server = occupiedMap[i];
-                unitsHtml += `
-                    <div class="unit ${server ? 'occupied' : 'free'}" 
-                         onclick="${server ? `editServer('${server.id}')` : `openAddModal(${i})`}">
-                        ${server ? '📦' : i}
-                    </div>
-                `;
-            }
-
-            // Список серверов
-            let serversHtml = '';
-            rackServers.sort((a, b) => a.startUnit - b.startUnit).forEach(server => {
-                serversHtml += `
-                    <div class="server-card">
-                        <div class="server-header">
-                            <span class="server-name">${server.serverName || 'Без имени'}</span>
-                            <button class="delete-btn" onclick="deleteServer('${server.id}')">🗑</button>
-                        </div>
-                        <div class="server-location">
-                            Юниты ${server.startUnit}-${server.endUnit} (${server.unitsCount}U)
-                        </div>
-                        <div class="server-details">
-                            <span>${server.powerStatus || '⚫ Неизвестно'}</span>
-                            <span>🖥 ${server.mediaServer || 'Нет'}</span>
-                        </div>
-                        ${server.ipAddress ? `<div class="server-details">🌐 ${server.ipAddress}</div>` : ''}
-                    </div>
-                `;
-            });
-
-            document.getElementById('content').innerHTML = `
-                <div class="rack-view">
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-                        <span>Юниты 1-49</span>
-                        <span>Занято: ${rackServers.reduce((acc, s) => acc + (s.unitsCount || 1), 0)}U</span>
-                    </div>
-                    <div class="units-grid">
-                        ${unitsHtml}
-                    </div>
-                </div>
-                <div class="servers-list">
-                    <h3 style="margin-bottom: 12px;">Серверы в стойке ${currentRack}</h3>
-                    ${serversHtml || '<p>Нет серверов</p>'}
-                </div>
-            `;
-        }
-
-        // Статистика
-        function renderStats() {
-            const totalServers = servers.length;
-            const totalUnits = servers.reduce((acc, s) => acc + (s.unitsCount || 1), 0);
-            
-            const rackStats = {};
-            ['A', 'B', 'C'].forEach(rack => {
-                const rackServers = servers.filter(s => s.rack === rack);
-                rackStats[rack] = {
-                    count: rackServers.length,
-                    units: rackServers.reduce((acc, s) => acc + (s.unitsCount || 1), 0)
-                };
-            });
-
-            document.getElementById('content').innerHTML = `
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <div class="stat-value">${totalServers}</div>
-                        <div class="stat-label">Всего серверов</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-value">${totalUnits}</div>
-                        <div class="stat-label">Занято юнитов</div>
-                    </div>
-                </div>
-                
-                <div class="rack-view">
-                    <h3 style="margin-bottom: 12px;">По стойкам</h3>
-                    ${['A', 'B', 'C'].map(rack => `
-                        <div style="margin-bottom: 12px;">
-                            <div style="display: flex; justify-content: space-between;">
-                                <span>Стойка ${rack}</span>
-                                <span>${rackStats[rack].units}/49U</span>
-                            </div>
-                            <div style="background: var(--tg-theme-hint-color, #e0e0e0); height: 8px; border-radius: 4px; margin-top: 4px;">
-                                <div style="background: var(--tg-theme-button-color, #40a7e3); width: ${(rackStats[rack].units/49)*100}%; height: 8px; border-radius: 4px;"></div>
-                            </div>
-                            <small>Серверов: ${rackStats[rack].count}</small>
-                        </div>
-                    `).join('')}
-                </div>
-            `;
-        }
-
-        // Поиск
-        function renderSearch() {
-            document.getElementById('content').innerHTML = `
-                <div class="rack-view">
-                    <input type="text" class="search-input" id="searchInput" 
-                           placeholder="Поиск по названию, IP, ответственному..." 
-                           oninput="searchServers()">
-                    <div id="searchResults"></div>
-                </div>
-            `;
-        }
-
-        // Функция поиска
-        function searchServers() {
-            const query = document.getElementById('searchInput').value.toLowerCase();
-            if (!query) {
-                document.getElementById('searchResults').innerHTML = '';
-                return;
-            }
-
-            const results = servers.filter(s => 
-                (s.serverName && s.serverName.toLowerCase().includes(query)) ||
-                (s.ipAddress && s.ipAddress.includes(query)) ||
-                (s.responsible && s.responsible.toLowerCase().includes(query)) ||
-                (s.comment && s.comment.toLowerCase().includes(query))
-            );
-
-            let html = '';
-            results.slice(0, 20).forEach(server => {
-                html += `
-                    <div class="server-card" onclick="editServer('${server.id}')">
-                        <div class="server-name">${server.serverName}</div>
-                        <div class="server-location">${server.rack} [${server.startUnit}-${server.endUnit}]</div>
-                        ${server.ipAddress ? `<div>🌐 ${server.ipAddress}</div>` : ''}
-                    </div>
-                `;
-            });
-
-            if (results.length === 0) {
-                html = '<p>Ничего не найдено</p>';
-            }
-
-            document.getElementById('searchResults').innerHTML = html;
-        }
-
-        // Открыть модалку добавления
-        function openAddModal(startUnit) {
-            document.getElementById('modalTitle').textContent = 'Добавить сервер';
-            document.getElementById('serverForm').reset();
-            document.getElementById('serverId').value = '';
-            document.getElementById('rack').value = currentRack;
-            document.getElementById('startUnit').value = startUnit || '';
-            document.getElementById('serverModal').classList.add('active');
-        }
-
-        // Редактировать сервер
-        async function editServer(id) {
-            const server = servers.find(s => s.id === id);
-            if (!server) return;
-
-            document.getElementById('modalTitle').textContent = 'Редактировать сервер';
-            document.getElementById('serverId').value = id;
-            document.getElementById('rack').value = server.rack || 'A';
-            document.getElementById('startUnit').value = server.startUnit || '';
-            document.getElementById('unitsCount').value = server.unitsCount || 1;
-            document.getElementById('serverName').value = server.serverName || '';
-            document.getElementById('ipAddress').value = server.ipAddress || '';
-            document.getElementById('login').value = server.login || '';
-            document.getElementById('password').value = server.password || '';
-            document.getElementById('powerStatus').value = server.powerStatus || '⚫ Неизвестно';
-            document.getElementById('mediaServer').value = server.mediaServer || 'Нет';
-            document.getElementById('diskVendor').value = server.diskVendor || '';
-            document.getElementById('diskCount').value = server.diskCount || '';
-            document.getElementById('diskSize').value = server.diskSize || '';
-            document.getElementById('diskSerial').value = server.diskSerial || '';
-            document.getElementById('serialNumber').value = server.serialNumber || '';
-            document.getElementById('taskType').value = server.taskType || '';
-            document.getElementById('taskNumber').value = server.taskNumber || '';
-            document.getElementById('responsible').value = server.responsible || '';
-            document.getElementById('comment').value = server.comment || '';
-
-            document.getElementById('serverModal').classList.add('active');
-        }
-
-        // Закрыть модалку
-        function closeModal() {
-            document.getElementById('serverModal').classList.remove('active');
-        }
-
-        // Сохранить сервер
-        async function saveServer(event) {
-            event.preventDefault();
-            
-            const id = document.getElementById('serverId').value;
-            const startUnit = parseInt(document.getElementById('startUnit').value);
-            const unitsCount = parseInt(document.getElementById('unitsCount').value);
-            
-            const serverData = {
-                rack: document.getElementById('rack').value,
-                startUnit: startUnit,
-                endUnit: startUnit + unitsCount - 1,
-                unitsCount: unitsCount,
-                serverName: document.getElementById('serverName').value,
-                ipAddress: document.getElementById('ipAddress').value,
-                login: document.getElementById('login').value,
-                password: document.getElementById('password').value,
-                powerStatus: document.getElementById('powerStatus').value,
-                mediaServer: document.getElementById('mediaServer').value,
-                diskVendor: document.getElementById('diskVendor').value,
-                diskCount: document.getElementById('diskCount').value,
-                diskSize: document.getElementById('diskSize').value,
-                diskSerial: document.getElementById('diskSerial').value,
-                serialNumber: document.getElementById('serialNumber').value,
-                taskType: document.getElementById('taskType').value,
-                taskNumber: document.getElementById('taskNumber').value,
-                responsible: document.getElementById('responsible').value,
-                comment: document.getElementById('comment').value,
-                userId: userId,
-                userName: userName,
-                updatedAt: new Date().toISOString()
+            // Firebase config
+            const firebaseConfig = {
+                apiKey: "AIzaSyBDSftDnPN_gSYzY0Z-dTALNjQe-zXoPsE",
+                authDomain: "rack-manager-340bb.firebaseapp.com",
+                projectId: "rack-manager-340bb",
+                storageBucket: "rack-manager-340bb.firebasestorage.app",
+                messagingSenderId: "505606999321",
+                appId: "1:505606999321:web:5a36888fb94648f4c2f808",
+                measurementId: "G-SF67YME7XH"
             };
 
-            try {
-                if (id) {
-                    await db.collection('servers').doc(id).update(serverData);
-                } else {
-                    await db.collection('servers').add(serverData);
+            // Инициализация Firebase
+            firebase.initializeApp(firebaseConfig);
+            const db = firebase.firestore();
+
+            // Данные пользователя
+            const userId = tg.initDataUnsafe?.user?.id || 'anonymous';
+            const userName = tg.initDataUnsafe?.user?.first_name || 'User';
+
+            // Состояние приложения
+            let currentRack = 'A';
+            let currentView = 'racks';
+            let servers = [];
+
+            // Загрузка данных
+            async function loadData() {
+                try {
+                    const snapshot = await db.collection('servers').get();
+                    servers = snapshot.docs.map(doc => ({
+                        id: doc.id,
+                        ...doc.data()
+                    }));
+                    renderView();
+                } catch (error) {
+                    console.error('Ошибка загрузки:', error);
+                    servers = [];
+                    renderView();
                 }
+            }
+
+            // Рендер
+            function renderView() {
+                if (currentView === 'racks') renderRacks();
+                else if (currentView === 'stats') renderStats();
+                else if (currentView === 'search') renderSearch();
+            }
+
+            // Стойки
+            function renderRacks() {
+                const rackServers = servers.filter(s => s.rack === currentRack);
                 
-                closeModal();
-                await loadData();
-                tg.HapticFeedback.notification('success');
-            } catch (error) {
-                console.error('Ошибка сохранения:', error);
-                tg.HapticFeedback.notification('error');
+                const occupiedMap = {};
+                rackServers.forEach(server => {
+                    for (let u = server.startUnit; u <= server.endUnit; u++) {
+                        occupiedMap[u] = server;
+                    }
+                });
+
+                let unitsHtml = '';
+                for (let i = 1; i <= 49; i++) {
+                    const server = occupiedMap[i];
+                    unitsHtml += `
+                        <div class="unit ${server ? 'occupied' : 'free'}" 
+                             onclick="window.app.${server ? `editServer('${server.id}')` : `openAddModal(${i})`}">
+                            ${server ? '📦' : i}
+                        </div>
+                    `;
+                }
+
+                let serversHtml = '';
+                rackServers.sort((a, b) => a.startUnit - b.startUnit).forEach(server => {
+                    serversHtml += `
+                        <div class="server-card">
+                            <div class="server-header">
+                                <span class="server-name">${server.serverName || 'Без имени'}</span>
+                                <button class="delete-btn" onclick="window.app.deleteServer('${server.id}')">🗑</button>
+                            </div>
+                            <div class="server-location">
+                                Юниты ${server.startUnit}-${server.endUnit} (${server.unitsCount}U)
+                            </div>
+                            <div class="server-details">
+                                <span>${server.powerStatus || '⚫ Неизвестно'}</span>
+                                <span>🖥 ${server.mediaServer || 'Нет'}</span>
+                            </div>
+                            ${server.ipAddress ? `<div class="server-details">🌐 ${server.ipAddress}</div>` : ''}
+                        </div>
+                    `;
+                });
+
+                document.getElementById('content').innerHTML = `
+                    <div class="rack-view">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                            <span>Юниты 1-49</span>
+                            <span>Занято: ${rackServers.reduce((acc, s) => acc + (s.unitsCount || 1), 0)}U</span>
+                        </div>
+                        <div class="units-grid">
+                            ${unitsHtml}
+                        </div>
+                    </div>
+                    <div class="servers-list">
+                        <h3 style="margin-bottom: 12px;">Серверы в стойке ${currentRack}</h3>
+                        ${serversHtml || '<p>Нет серверов</p>'}
+                    </div>
+                `;
             }
-        }
 
-        // Удалить сервер
-        async function deleteServer(id) {
-            if (!confirm('Удалить сервер?')) return;
-            
-            try {
-                await db.collection('servers').doc(id).delete();
-                await loadData();
-                tg.HapticFeedback.notification('success');
-            } catch (error) {
-                console.error('Ошибка удаления:', error);
-                tg.HapticFeedback.notification('error');
+            // Статистика
+            function renderStats() {
+                const totalServers = servers.length;
+                const totalUnits = servers.reduce((acc, s) => acc + (s.unitsCount || 1), 0);
+                
+                const rackStats = {};
+                ['A', 'B', 'C'].forEach(rack => {
+                    const rackServers = servers.filter(s => s.rack === rack);
+                    rackStats[rack] = {
+                        count: rackServers.length,
+                        units: rackServers.reduce((acc, s) => acc + (s.unitsCount || 1), 0)
+                    };
+                });
+
+                document.getElementById('content').innerHTML = `
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-value">${totalServers}</div>
+                            <div class="stat-label">Всего серверов</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value">${totalUnits}</div>
+                            <div class="stat-label">Занято юнитов</div>
+                        </div>
+                    </div>
+                    
+                    <div class="rack-view">
+                        <h3 style="margin-bottom: 12px;">По стойкам</h3>
+                        ${['A', 'B', 'C'].map(rack => `
+                            <div style="margin-bottom: 12px;">
+                                <div style="display: flex; justify-content: space-between;">
+                                    <span>Стойка ${rack}</span>
+                                    <span>${rackStats[rack].units}/49U</span>
+                                </div>
+                                <div style="background: var(--tg-theme-hint-color, #e0e0e0); height: 8px; border-radius: 4px; margin-top: 4px;">
+                                    <div style="background: var(--tg-theme-button-color, #40a7e3); width: ${(rackStats[rack].units/49)*100}%; height: 8px; border-radius: 4px;"></div>
+                                </div>
+                                <small>Серверов: ${rackStats[rack].count}</small>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
             }
-        }
 
-        // Переключение видов
-        function showView(view) {
-            currentView = view;
-            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
-            event.target.closest('.nav-item').classList.add('active');
-            renderView();
-        }
+            // Поиск
+            function renderSearch() {
+                document.getElementById('content').innerHTML = `
+                    <div class="rack-view">
+                        <input type="text" class="search-input" id="searchInput" 
+                               placeholder="Поиск по названию, IP, ответственному..." 
+                               onkeyup="window.app.searchServers()">
+                        <div id="searchResults"></div>
+                    </div>
+                `;
+            }
 
-        // Загружаем данные
-        loadData();
+            function searchServers() {
+                const query = document.getElementById('searchInput').value.toLowerCase();
+                if (!query) {
+                    document.getElementById('searchResults').innerHTML = '';
+                    return;
+                }
+
+                const results = servers.filter(s => 
+                    (s.serverName && s.serverName.toLowerCase().includes(query)) ||
+                    (s.ipAddress && s.ipAddress.includes(query)) ||
+                    (s.responsible && s.responsible.toLowerCase().includes(query)) ||
+                    (s.comment && s.comment.toLowerCase().includes(query))
+                );
+
+                let html = '';
+                results.slice(0, 20).forEach(server => {
+                    html += `
+                        <div class="server-card" onclick="window.app.editServer('${server.id}')">
+                            <div class="server-name">${server.serverName}</div>
+                            <div class="server-location">${server.rack} [${server.startUnit}-${server.endUnit}]</div>
+                            ${server.ipAddress ? `<div>🌐 ${server.ipAddress}</div>` : ''}
+                        </div>
+                    `;
+                });
+
+                if (results.length === 0) {
+                    html = '<p>Ничего не найдено</p>';
+                }
+
+                document.getElementById('searchResults').innerHTML = html;
+            }
+
+            // Модалка
+            function openAddModal(startUnit) {
+                document.getElementById('modalTitle').textContent = 'Добавить сервер';
+                document.getElementById('serverForm').reset();
+                document.getElementById('serverId').value = '';
+                document.getElementById('rack').value = currentRack;
+                document.getElementById('startUnit').value = startUnit || '';
+                document.getElementById('serverModal').classList.add('active');
+            }
+
+            function closeModal() {
+                document.getElementById('serverModal').classList.remove('active');
+            }
+
+            async function editServer(id) {
+                const server = servers.find(s => s.id === id);
+                if (!server) return;
+
+                document.getElementById('modalTitle').textContent = 'Редактировать сервер';
+                document.getElementById('serverId').value = id;
+                document.getElementById('rack').value = server.rack || 'A';
+                document.getElementById('startUnit').value = server.startUnit || '';
+                document.getElementById('unitsCount').value = server.unitsCount || 1;
+                document.getElementById('serverName').value = server.serverName || '';
+                document.getElementById('ipAddress').value = server.ipAddress || '';
+                document.getElementById('login').value = server.login || '';
+                document.getElementById('password').value = server.password || '';
+                document.getElementById('powerStatus').value = server.powerStatus || '⚫ Неизвестно';
+                document.getElementById('mediaServer').value = server.mediaServer || 'Нет';
+                document.getElementById('diskVendor').value = server.diskVendor || '';
+                document.getElementById('diskCount').value = server.diskCount || '';
+                document.getElementById('diskSize').value = server.diskSize || '';
+                document.getElementById('diskSerial').value = server.diskSerial || '';
+                document.getElementById('serialNumber').value = server.serialNumber || '';
+                document.getElementById('taskType').value = server.taskType || '';
+                document.getElementById('taskNumber').value = server.taskNumber || '';
+                document.getElementById('responsible').value = server.responsible || '';
+                document.getElementById('comment').value = server.comment || '';
+
+                document.getElementById('serverModal').classList.add('active');
+            }
+
+            async function saveServer(event) {
+                event.preventDefault();
+                
+                const id = document.getElementById('serverId').value;
+                const startUnit = parseInt(document.getElementById('startUnit').value);
+                const unitsCount = parseInt(document.getElementById('unitsCount').value);
+                
+                const serverData = {
+                    rack: document.getElementById('rack').value,
+                    startUnit: startUnit,
+                    endUnit: startUnit + unitsCount - 1,
+                    unitsCount: unitsCount,
+                    serverName: document.getElementById('serverName').value,
+                    ipAddress: document.getElementById('ipAddress').value,
+                    login: document.getElementById('login').value,
+                    password: document.getElementById('password').value,
+                    powerStatus: document.getElementById('powerStatus').value,
+                    mediaServer: document.getElementById('mediaServer').value,
+                    diskVendor: document.getElementById('diskVendor').value,
+                    diskCount: document.getElementById('diskCount').value,
+                    diskSize: document.getElementById('diskSize').value,
+                    diskSerial: document.getElementById('diskSerial').value,
+                    serialNumber: document.getElementById('serialNumber').value,
+                    taskType: document.getElementById('taskType').value,
+                    taskNumber: document.getElementById('taskNumber').value,
+                    responsible: document.getElementById('responsible').value,
+                    comment: document.getElementById('comment').value,
+                    userId: userId,
+                    userName: userName,
+                    updatedAt: new Date().toISOString()
+                };
+
+                try {
+                    if (id) {
+                        await db.collection('servers').doc(id).update(serverData);
+                    } else {
+                        await db.collection('servers').add(serverData);
+                    }
+                    
+                    closeModal();
+                    await loadData();
+                    tg.HapticFeedback.notification('success');
+                } catch (error) {
+                    console.error('Ошибка сохранения:', error);
+                    tg.HapticFeedback.notification('error');
+                }
+            }
+
+            async function deleteServer(id) {
+                if (!confirm('Удалить сервер?')) return;
+                
+                try {
+                    await db.collection('servers').doc(id).delete();
+                    await loadData();
+                    tg.HapticFeedback.notification('success');
+                } catch (error) {
+                    console.error('Ошибка удаления:', error);
+                    tg.HapticFeedback.notification('error');
+                }
+            }
+
+            function switchRack(rack) {
+                currentRack = rack;
+                document.querySelectorAll('.rack-tab').forEach((tab, i) => {
+                    tab.classList.toggle('active', i === ['A','B','C'].indexOf(rack));
+                });
+                if (currentView === 'racks') renderView();
+            }
+
+            function showView(view) {
+                currentView = view;
+                document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+                event.target.closest('.nav-item').classList.add('active');
+                renderView();
+            }
+
+            // Экспортируем функции в window.app
+            window.app = {
+                switchRack,
+                showView,
+                openAddModal,
+                closeModal,
+                saveServer,
+                editServer,
+                deleteServer,
+                searchServers
+            };
+
+            // Загружаем данные
+            loadData();
+        })();
     </script>
 </body>
 </html>
